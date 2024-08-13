@@ -1,12 +1,22 @@
 let temp = 'F';
 
+const background = document.querySelector('#background');
+
 async function getData(location) {
   const response = await fetch(
     `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?key=NVMFQ3NAJSPXZF28XR7DRFV3U`, {mode: 'cors'})
   const data = await response.json();
-
   return data;
 }
+
+async function getImg(location) {
+  const response = await fetch(`https://api.giphy.com/v1/gifs/translate?api_key=7AXVSclSkdGvJGOdxOEeELZMfAriJRiF&s=${location}`, {mode: 'cors'})
+  const img = await response.json();
+  background.src = img.data.images.original.url;
+  
+}
+
+
 
 function getCurrentCondition(data){
   const currentDay = {
@@ -78,6 +88,7 @@ submit.addEventListener("click", async (e) => {
   e.preventDefault();
   const location = document.querySelector('#location').value;
   const data = await getData(location);
+  getImg(location);
   const processedData = processData(data);
   console.log(temp);
   if (temp === 'C'){
@@ -97,3 +108,50 @@ submit.addEventListener("click", async (e) => {
 
 });
 
+//DOM
+
+function createHours(data){
+  const today = document.querySelector('#today');
+  for(let i = 0; i < 24; i++){
+    const day = document.createElement('div');
+
+    const hour = document.createElement('div');
+    hour.setAttribute('id', 'hour'+i);
+    hour.textContent = data[i].datetime;
+    day.appendChild(hour);
+
+    const icon = document.createElement('img');
+    icon.src = data.icon;
+    hour.setAttribute('id', 'icon'+i);
+    day.appendChild(icon);
+
+    const temp = document.createElement('div');
+    temp.textContent = data.temp;
+    hour.setAttribute('id', 'temp'+i);
+    day.appendChild(temp);
+  }
+  today.appendChild(day);
+}
+
+function createDays(data){
+  const days = document.querySelector('#days');
+  for(let i = 0; i < 14; i++){
+    const day = document.createElement('div');
+
+    const time = document.createElement('div');
+    hour.setAttribute('id', 'time'+i);
+    hour.textContent = data[i].datetime;
+    time.appendChild(hour);
+
+    const icon = document.createElement('img');
+    icon.src = data.icon;
+    hour.setAttribute('id', 'icon'+i);
+    day.appendChild(icon);
+
+    const temp = document.createElement('div');
+    temp.textContent = data.temp;
+    hour.setAttribute('id', 'temp'+i);
+    day.appendChild(temp);
+  }
+  days.appendChild(days);
+}
