@@ -1,3 +1,5 @@
+import { createApi } from 'unsplash-js';
+
 let temp = 'F';
 
 const background = document.querySelector('#background');
@@ -9,14 +11,16 @@ async function getData(location) {
   return data;
 }
 
-async function getImg(location) {
-  const response = await fetch(`https://api.giphy.com/v1/gifs/translate?api_key=7AXVSclSkdGvJGOdxOEeELZMfAriJRiF&s=${location}`, {mode: 'cors'})
-  const img = await response.json();
-  background.src = img.data.images.original.url;
-  
-}
 
+async function getImg (photoQuery){
+  const unsplash = createApi({
+    accessKey: 'R5Z6qx-F_KvpcHEPFi4dkTzdXR0Vv5LnK20iTbyUXBg',
+  });
 
+  const imgjson = await (await unsplash.photos.getRandom({ query: photoQuery })).response.urls.raw;
+  console.log(imgjson);
+  return imgjson;
+};
 
 function getCurrentCondition(data){
   const currentDay = {
@@ -88,6 +92,8 @@ submit.addEventListener("click", async (e) => {
   e.preventDefault();
   const location = document.querySelector('#location').value;
   const data = await getData(location);
+  const unsplash = await getImg(location);
+  background.src = unsplash;
   getImg(location);
   const processedData = processData(data);
   console.log(temp);
