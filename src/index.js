@@ -1,8 +1,19 @@
 import { createApi } from 'unsplash-js';
 
+
+const apiKey = "bSpo2yv3qJI7R5pwxR2u";
+
 let temp = 'F';
 
 const background = document.querySelector('#background');
+
+const submit = document.querySelector('#submit');
+
+const changeTemp = document.querySelector('#changeTemp');
+
+const searchBox = document.querySelector('#location');
+
+const options = document.querySelector('.options').children;
 
 async function getData(location) {
   const response = await fetch(
@@ -10,7 +21,6 @@ async function getData(location) {
   const data = await response.json();
   return data;
 }
-
 
 async function getImg (photoQuery){
   const unsplash = createApi({
@@ -84,16 +94,13 @@ function tempScale(processedData){
   }
 }
 
-const submit = document.querySelector('#submit');
-
-const changeTemp = document.querySelector('#changeTemp');
-
 submit.addEventListener("click", async (e) => {
   e.preventDefault();
   const location = document.querySelector('#location').value;
   const data = await getData(location);
   const unsplash = await getImg(location);
-  background.src = unsplash;
+  const html = document.querySelector('html');
+  html.style.backgroundImage = `url(${unsplash})`;
   getImg(location);
   const processedData = processData(data);
   console.log(temp);
@@ -111,13 +118,61 @@ submit.addEventListener("click", async (e) => {
     console.log(temp);
     console.log(processedData);
   })
-
+  createHours(processedData.hoursConditions);
+  createDays(processedData.daysConditions);
+  createCurrent(processedData.currentConditions);
 });
+
+searchBox.addEventListener('keypress', async () => {
+  console.log('joj');
+  const input = document.querySelector('#location').value;
+  const response = await fetch(`https://api.maptiler.com/geocoding/${input}.json?proximity=ip&autocomplete=false&fuzzyMatch=true&limit=3&key=bSpo2yv3qJI7R5pwxR2u`);
+  const data = await response.json();
+  console.log(data);
+  const data1 = data.features[0].place_name_en;
+  console.log(data1);
+  const data2 = data.features[1].place_name_en;
+  const data3 = data.features[2].place_name_en;
+  searchOptions(data1, data2, data3);
+})
 
 //DOM
 
+for(let i = 0; i < 3; i++){
+  options[i].addEventListener('click', () => {
+    searchBox.value = options[i].textContent;
+    for(let i = 0; i < 3; i++){
+      options[i].style.display = 'none';
+    }
+  });
+}
+
+
+function searchOptions(data1, data2, data3) {
+  for(let i = 0; i < 3; i++){
+    options[i].style.display = 'block';
+  }
+  options[0].textContent = data1;
+  options[1].textContent = data2;
+  options[2].textContent = data3;
+}
+
+function createCurrent(data){
+  const temp = document.querySelector('.current > temp');
+  temp.textContent = data.temp;
+  const icon = document.querySelector('.current > icon');
+  icon.src = data.icon;
+  const location = document.querySelector('.current > location');
+  temp.textContent = data.location;
+  const feelslike = document.querySelector('.current > feelslike');
+  feelslike.textContent = data.feelslike;
+  const humidity = document.querySelector('.current > humidity');
+  humidity.textContent = data.humidity;
+
+}
+
 function createHours(data){
-  const today = document.querySelector('#today');
+  const today = document.querySelector('.today');
   for(let i = 0; i < 24; i++){
     const day = document.createElement('div');
 
@@ -127,22 +182,23 @@ function createHours(data){
     day.appendChild(hour);
 
     const icon = document.createElement('img');
-    icon.src = data.icon;
+    icon.src = data[i].icon;
     hour.setAttribute('id', 'icon'+i);
     day.appendChild(icon);
 
     const temp = document.createElement('div');
-    temp.textContent = data.temp;
+    temp.textContent = data[i].temp;
     hour.setAttribute('id', 'temp'+i);
     day.appendChild(temp);
+    today.appendChild(day);
   }
-  today.appendChild(day);
+  
 }
 
 function createDays(data){
-  const days = document.querySelector('#days');
+  const days = document.querySelector('.days');
   for(let i = 0; i < 14; i++){
-    const day = document.createElement('div');
+    const hour = document.createElement('div');
 
     const time = document.createElement('div');
     hour.setAttribute('id', 'time'+i);
@@ -150,14 +206,15 @@ function createDays(data){
     time.appendChild(hour);
 
     const icon = document.createElement('img');
-    icon.src = data.icon;
+    icon.src = data[i].icon;
     hour.setAttribute('id', 'icon'+i);
-    day.appendChild(icon);
+    hour.appendChild(icon);
 
     const temp = document.createElement('div');
-    temp.textContent = data.temp;
+    temp.textContent = data[i].temp;
     hour.setAttribute('id', 'temp'+i);
-    day.appendChild(temp);
+    hour.appendChild(temp);
+    days.appendChild(hour);
   }
-  days.appendChild(days);
+  
 }
