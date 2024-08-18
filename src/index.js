@@ -3,7 +3,7 @@ import { createApi } from 'unsplash-js';
 
 const apiKey = "bSpo2yv3qJI7R5pwxR2u";
 
-let temp = 'F';
+let temperature = 'F';
 
 const background = document.querySelector('#background');
 
@@ -48,7 +48,8 @@ function getDaysCondition(data){
   for(let i = 0; i < 14; i++){
     days.push({
       temp: data[i].temp, 
-      icon: data[i].icon
+      icon: data[i].icon,
+      date:data[i].datetime
     });
   }
   return days;
@@ -74,22 +75,22 @@ function processData(data) {
 }
 
 function tempScale(processedData){
-  if(temp === 'F'){
-    processedData.currentConditions.temp = 9/5 * processedData.currentConditions.temp + 32;
+  if(temperature === 'F'){
+    processedData.currentConditions.temp = Math.trunc(9/5 * processedData.currentConditions.temp + 32);
     for(let i = 0; i < 24; i++){
-      processedData.hoursConditions[i].temp = 9/5 * processedData.hoursConditions[i].temp + 32;
+      processedData.hoursConditions[i].temp = Math.trunc(9/5 * processedData.hoursConditions[i].temp + 32);
     }
     for(let i = 0; i < 14; i++){
-      processedData.daysConditions[i].temp = 9/5 * processedData.daysConditions[i].temp + 32;
+      processedData.daysConditions[i].temp = Math.trunc(9/5 * processedData.daysConditions[i].temp + 32);
     }
   } else {
-    temp = 'C';
-    processedData.currentConditions.temp = 5/9 * processedData.currentConditions.temp - 32*5/9;
+    temperature = 'C';
+    processedData.currentConditions.temp = Math.trunc(5/9 * processedData.currentConditions.temp - 32*5/9);
     for(let i = 0; i < 24; i++){
-      processedData.hoursConditions[i].temp = 5/9 * processedData.hoursConditions[i].temp - 32*5/9;
+      processedData.hoursConditions[i].temp = Math.trunc(5/9 * processedData.hoursConditions[i].temp - 32*5/9);
     }
     for(let i = 0; i < 14; i++){
-      processedData.daysConditions[i].temp = 5/9 * processedData.daysConditions[i].temp - 32*5/9;
+      processedData.daysConditions[i].temp = Math.trunc(5/9 * processedData.daysConditions[i].temp - 32*5/9);
     }
   }
 }
@@ -98,6 +99,7 @@ submit.addEventListener("click", async (e) => {
   e.preventDefault();
   const location = document.querySelector('#location').value;
   const data = await getData(location);
+  console.log(data);
   const unsplash = await getImg(location);
   const html = document.querySelector('html');
   html.style.backgroundImage = `url(${unsplash})`;
@@ -108,19 +110,22 @@ submit.addEventListener("click", async (e) => {
     tempScale(processedData);
   }
   console.log(processedData);
-  changeTemp.addEventListener("click", () => {
-    if(temp === 'C'){
-      temp = 'F';
-    } else {
-      temp = 'C';
-    };
-    tempScale(processedData);
-    console.log(temp);
-    console.log(processedData);
-  })
+  
   createHours(processedData.hoursConditions);
   createDays(processedData.daysConditions);
   createCurrent(processedData.currentConditions);
+  changeTemp.addEventListener("click", () => {
+    if(temp === 'C'){
+      temperature = 'F';
+    } else {
+      temperature = 'C';
+    };
+    tempScale(processedData);
+    changeTemp.textContent = + temperature;
+    createHours(processedData.hoursConditions);
+    createDays(processedData.daysConditions);
+    createCurrent(processedData.currentConditions);
+  })
 });
 
 searchBox.addEventListener('keypress', async () => {
@@ -158,37 +163,38 @@ function searchOptions(data1, data2, data3) {
 }
 
 function createCurrent(data){
-  const temp = document.querySelector('.current > temp');
-  temp.textContent = data.temp;
-  const icon = document.querySelector('.current > icon');
-  icon.src = data.icon;
-  const location = document.querySelector('.current > location');
-  temp.textContent = data.location;
-  const feelslike = document.querySelector('.current > feelslike');
-  feelslike.textContent = data.feelslike;
-  const humidity = document.querySelector('.current > humidity');
-  humidity.textContent = data.humidity;
+  const temp = document.querySelector('.current > #temp');
+  temp.textContent = data.temp + temperature;
+  const icon = document.querySelector('.current > #icon');
+  icon.src = 'imgs/'+data.icon+'.png';
+  const location = document.querySelector('.current > #location');
+  location.textContent = searchBox.value;
+  const feelslike = document.querySelector('.current > #feelslike');
+  feelslike.textContent = data.feelslike + temperature;
+  const humidity = document.querySelector('.current > #humidity');
+  humidity.textContent = data.humidity + '%';
 
 }
 
 function createHours(data){
   const today = document.querySelector('.today');
-  for(let i = 0; i < 24; i++){
+  today.textContent = '';
+  for(let i = 0; i < 4; i++){
     const day = document.createElement('div');
 
     const hour = document.createElement('div');
     hour.setAttribute('id', 'hour'+i);
-    hour.textContent = data[i].datetime;
+    hour.textContent = data[i].date;
     day.appendChild(hour);
 
     const icon = document.createElement('img');
-    icon.src = data[i].icon;
-    hour.setAttribute('id', 'icon'+i);
+    icon.src = 'imgs/'+data[i].icon+'.png';
+    icon.setAttribute('id', 'icon'+i);
     day.appendChild(icon);
 
     const temp = document.createElement('div');
-    temp.textContent = data[i].temp;
-    hour.setAttribute('id', 'temp'+i);
+    temp.textContent = data[i].temp + temperature;
+    temp.setAttribute('id', 'temp'+i);
     day.appendChild(temp);
     today.appendChild(day);
   }
@@ -197,24 +203,27 @@ function createHours(data){
 
 function createDays(data){
   const days = document.querySelector('.days');
-  for(let i = 0; i < 14; i++){
+  days.textContent = '';
+  for(let i = 0; i < 5; i++){
     const hour = document.createElement('div');
 
     const time = document.createElement('div');
-    hour.setAttribute('id', 'time'+i);
-    hour.textContent = data[i].datetime;
-    time.appendChild(hour);
+    time.setAttribute('id', 'time'+i);
+    time.textContent = data[i].date;
+    hour.appendChild(time);
 
     const icon = document.createElement('img');
-    icon.src = data[i].icon;
-    hour.setAttribute('id', 'icon'+i);
+    icon.src = 'imgs/'+data[i].icon+'.png';
+    icon.setAttribute('id', 'icon'+i);
     hour.appendChild(icon);
 
     const temp = document.createElement('div');
-    temp.textContent = data[i].temp;
-    hour.setAttribute('id', 'temp'+i);
+    temp.textContent = data[i].temp + temperature;
+    temp.setAttribute('id', 'temp'+i);
     hour.appendChild(temp);
     days.appendChild(hour);
   }
   
 }
+
+changeTemp.textContent = '°F';
