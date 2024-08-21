@@ -5,6 +5,10 @@ const apiKey = "bSpo2yv3qJI7R5pwxR2u";
 
 let temperature = 'F';
 
+let processedData;
+
+let adress;
+
 const background = document.querySelector('#background');
 
 const submit = document.querySelector('#submit');
@@ -38,7 +42,8 @@ function getCurrentCondition(data){
     icon: data.icon, 
     temp: data.temp, 
     feelslike: data.feelslike, 
-    humidity: data.humidity
+    humidity: data.humidity,
+    datetime: data.datetime
   };
   return currentDay;
 }
@@ -84,7 +89,6 @@ function tempScale(processedData){
       processedData.daysConditions[i].temp = Math.trunc(9/5 * processedData.daysConditions[i].temp + 32);
     }
   } else {
-    temperature = 'C';
     processedData.currentConditions.temp = Math.trunc(5/9 * processedData.currentConditions.temp - 32*5/9);
     for(let i = 0; i < 24; i++){
       processedData.hoursConditions[i].temp = Math.trunc(5/9 * processedData.hoursConditions[i].temp - 32*5/9);
@@ -100,33 +104,34 @@ submit.addEventListener("click", async (e) => {
   const location = document.querySelector('#location').value;
   const data = await getData(location);
   console.log(data);
+  adress = data.adress;
   const unsplash = await getImg(location);
   const html = document.querySelector('html');
   html.style.backgroundImage = `url(${unsplash})`;
   getImg(location);
-  const processedData = processData(data);
-  console.log(temp);
-  if (temp === 'C'){
-    tempScale(processedData);
-  }
+  processedData = processData(data);
   console.log(processedData);
-  
-  createHours(processedData.hoursConditions);
+
   createDays(processedData.daysConditions);
   createCurrent(processedData.currentConditions);
-  changeTemp.addEventListener("click", () => {
-    if(temp === 'C'){
+  
+});
+
+changeTemp.addEventListener("click", () => {
+    console.log(temperature);
+    if(temperature === 'C'){
+      changeTemp.textContent = temperature;
       temperature = 'F';
     } else {
       temperature = 'C';
+      changeTemp.textContent = '°' + temperature;
+
     };
     tempScale(processedData);
-    changeTemp.textContent = + temperature;
-    createHours(processedData.hoursConditions);
+
     createDays(processedData.daysConditions);
     createCurrent(processedData.currentConditions);
   })
-});
 
 searchBox.addEventListener('keypress', async () => {
   console.log('joj');
@@ -162,46 +167,25 @@ function searchOptions(data1, data2, data3) {
   options[2].textContent = data3;
 }
 
+let a;
+
 function createCurrent(data){
+  if(temperature == 'C'){a = '°'}else{a = ''}
   const temp = document.querySelector('.current > #temp');
-  temp.textContent = data.temp + temperature;
+  temp.textContent = 'Temp: ' + data.temp + a + temperature;
   const icon = document.querySelector('.current > #icon');
   icon.src = 'imgs/'+data.icon+'.png';
   const location = document.querySelector('.current > #location');
   location.textContent = searchBox.value;
   const feelslike = document.querySelector('.current > #feelslike');
-  feelslike.textContent = data.feelslike + temperature;
+  feelslike.textContent = 'Feels like: ' + data.feelslike + a + temperature;
   const humidity = document.querySelector('.current > #humidity');
-  humidity.textContent = data.humidity + '%';
+  humidity.textContent = 'Humidity: ' + data.humidity + '%';
 
-}
-
-function createHours(data){
-  const today = document.querySelector('.today');
-  today.textContent = '';
-  for(let i = 0; i < 4; i++){
-    const day = document.createElement('div');
-
-    const hour = document.createElement('div');
-    hour.setAttribute('id', 'hour'+i);
-    hour.textContent = data[i].date;
-    day.appendChild(hour);
-
-    const icon = document.createElement('img');
-    icon.src = 'imgs/'+data[i].icon+'.png';
-    icon.setAttribute('id', 'icon'+i);
-    day.appendChild(icon);
-
-    const temp = document.createElement('div');
-    temp.textContent = data[i].temp + temperature;
-    temp.setAttribute('id', 'temp'+i);
-    day.appendChild(temp);
-    today.appendChild(day);
-  }
-  
 }
 
 function createDays(data){
+  if(temperature == 'C'){a = '°'}else{a = ''}
   const days = document.querySelector('.days');
   days.textContent = '';
   for(let i = 0; i < 5; i++){
@@ -218,7 +202,7 @@ function createDays(data){
     hour.appendChild(icon);
 
     const temp = document.createElement('div');
-    temp.textContent = data[i].temp + temperature;
+    temp.textContent = data[i].temp + a + temperature;
     temp.setAttribute('id', 'temp'+i);
     hour.appendChild(temp);
     days.appendChild(hour);
@@ -226,4 +210,4 @@ function createDays(data){
   
 }
 
-changeTemp.textContent = '°F';
+changeTemp.textContent = 'F';
