@@ -2,7 +2,6 @@
 
 Um aplicativo de clima simples e intuitivo, desenvolvido para fornecer informações meteorológicas em tempo real. Projeto ideal para aprendizado de integração com APIs, utilizando JavaScript para desenvolvimento frontend. 
 
-![Preview](https://via.placeholder.com/800x400?text=Preview+do+WeatherApp) *(Adicione uma imagem real do projeto aqui)*  
 
 ---
 
