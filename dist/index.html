@@ -8,16 +8,22 @@
   <script src="main.js" defer></script>
 </head>
 <body>
-  <img src="#" id="background">
-  <div class="main">
-    <input id="location" type="text" required />
-    <button id="submit">Search</button>
-    <button id="changeTemp"></button>
+  <div class="header">
+    <input id="location" type="text" required="">
+    <div class="options">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
 
+    <button id="submit">Search</button>
+    <button id="changeTemp">F</button>
+  </div>
+  <div class="main">
     <div class="current">
+      <div id="location"></div>
       <div id="temp"></div>
       <img id="icon">
-      <div id="location"></div>
       <div id="feelslike"></div>
       <div id="humidity"></div>
     </div>
@@ -29,7 +35,8 @@
     <div class="days">
 
     </div>
-    
+
   </div>
+
 </body>
 </html>

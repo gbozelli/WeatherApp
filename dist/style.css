@@ -1,2 +1,125 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
+html {
+  background: no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, .2);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Roboto';
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+  gap: 8px;
+}
+
+.options {
+  position: absolute;
+  background-color: rgb(255, 255, 255);
+  top: 42px;
+  right: 50%px;
+  max-width: 380px;
+  min-width: 380px;
+  border-radius: 4px;
+}
+
+.header>#location {
+  border: 0;
+  padding: 4px;
+  width: 280px;
+  height: 20px;
+  border-radius: 10px;
+  background-color: aliceblue;
+}
+
+#submit,
+#changeTemp {
+  background-color: aliceblue;
+  border: 0;
+  padding: 4px;
+  height: 25px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.main {
+  background-color: aliceblue;
+  width: 60%;
+  height: 40%;
+
+  align-self: center;
+  height: 43rem;
+}
+
+.days {
+  margin: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.days>div {
+  text-align: center;
+}
+
+.today {
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.current {
+  margin: 20px;
+  display: grid;
+  grid-template-columns: 80% 20%;
+  grid-template-rows: 20% 20% 20% 20%;
+  height: 400px;
+}
+
+.current>#location {
+  font-weight: bolder;
+  font-size: 100px;
+  position: relative;
+  grid-area: 1/0/1/1;
+}
+
+.current>#icon {
+  font-weight: bolder;
+  height: 80px;
+  position: relative;
+  grid-area: 3/2/3/2;
+}
+
+.current>#humidity {
+  font-weight: bolder;
+  font-size: 30px;
+  position: relative;
+  grid-area: 2/2/2/2;
+}
+
+.current>#feelslike {
+  font-weight: bolder;
+  font-size: 30px;
+  position: relative;
+  grid-area: 4/2/4/2;
+}
+
+.current>#temp {
+  font-weight: bolder;
+  font-size: 30px;
+  position: relative;
+  grid-area: 1/2/1/2;
+}
